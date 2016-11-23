@@ -1,0 +1,32 @@
+models=FreeWay	maxpausetime=10	minspeed=5	fixedacceleration=false	maps=FreeWay	dir1lanespace=0	height=500	lanenum=1	width=500	dir2lanespace=50	pointsX=50.0,50.0,343.0,418.0,	dir12space=50	pointsY=50.0,340.0,340.0,478.0,	maxacceleration=2	maxspeed=10	safedistanceratio=2.0	positiveaccratio=2.0	filenamegenerator=simple	seed=outputtrace	numberiterate=true	defaultfilter=edu.sharif.ce.dml.common.data.trace.filter.DirectoryFilter	isinput=false	fileaddress=output	multiple=false	tracewriter=text	nodenumber=2	maxsimulationtime=20
+Time	Node	PositionX	PositionY	Speed	Direction Angle
+1	0	50	259	0	1.57
+1	1	152	340	0.55	0
+2	0	50	260	1.19	1.57
+2	1	154	340	1.76	0
+3	0	50	263	2.63	1.57
+3	1	155	340	0.64	0
+4	0	50	266	3.76	1.57
+4	1	156	340	1.81	0
+5	0	50	270	3.99	1.57
+5	1	158	340	1.92	0
+6	0	50	275	4.29	1.57
+6	1	161	340	3.21	0
+7	0	50	278	3.67	1.57
+7	1	166	340	4.77	0
+8	0	50	283	5.21	1.57
+8	1	173	340	6.42	0
+9	0	50	289	5.4	1.57
+9	1	180	340	7.23	0
+10	0	50	296	7.36	1.57
+10	1	188	340	8.58	0
+11	0	50	304	8.04	1.57
+11	1	197	340	8.65	0
+12	0	50	312	7.73	1.57
+12	1	204	340	6.85	0
+13	0	50	322	9.56	1.57
+13	1	212	340	8.01	0
+14	0	50	332	10	1.57
+14	1	221	340	8.86	0
+15	0	50	340	8.19	1.57
+15	1	229	340	7.88	0

@@ -1,0 +1,44 @@
+class VANET
+{
+1 @-  Node;
+1 @-   Cluster;
+1 @-   Transmission;   
+   Integer area;
+  Integer range;
+}
+
+class Node
+{
+  Integer ID;
+  Integer position;
+  Integer QoS;
+  Integer speed;
+  Integer remaining_d;
+1  --  Transmission; 
+   -- 1 Cluster;
+   1  Node destination --  Transmission;  
+}
+
+class Cluster
+{
+  Integer Voting_ID;
+      1 - 1 CH;  
+}
+
+
+
+class Transmission
+{
+ -- 1 CH
+}
+
+class CH
+{
+  isA Node;
+   --  Transmission;
+}
+
+class Normal_node
+{
+  isA Node;
+}

@@ -1,0 +1,3 @@
+
+FileName	Clustering Coefficient
+outputtrace6.txt	0

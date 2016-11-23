@@ -1,0 +1,2 @@
+models=Manhattan	maxpausetime=10	minspeed=5	fixedacceleration=false	maps=Manhattan	height=500	hlines=160,450,	width=500	dir12lanespace=50	vlines=	maxacceleration=2	maxspeed=10	safedistanceratio=2.0	positiveaccratio=2.0	filenamegenerator=simple	seed=outputtrace	numberiterate=true	defaultfilter=edu.sharif.ce.dml.common.data.trace.filter.DirectoryFilter	isinput=false	fileaddress=output	multiple=false	tracewriter=text	nodenumber=10	maxsimulationtime=1000
+Time	Node	PositionX	PositionY	Speed	Direction Angle

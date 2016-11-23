@@ -1,0 +1,58 @@
+namespace ca.mcgill.ecse539.vanet.model;
+class VANET
+{
+  singleton;
+  lazy Integer area;
+  lazy Integer range;
+  lazy Integer path_length;
+}
+class Time
+{
+  Integer timeframe;
+  * -<@> 1 VANET;
+  1 -- * Node;
+}
+
+class Node
+{
+  Integer id;
+  Integer positionX;
+  Integer positionY;
+  float speed;
+  float direction;
+  lazy Integer qos;
+  lazy Integer remaining_d;
+  * -<@> 1 VANET;
+  0..1 -- * Node neighbors;
+  * clustermembers -- 0..1 Cluster custer;
+  
+  
+ 
+}
+
+class Cluster
+{
+Integer voting_ID;
+* -<@> 1 VANET;
+ 0..1 is_CH -- 1 Node CH;  
+}
+
+class Transmission
+{
+Integer hopCount;
+* -<@> 1 VANET;
+* ts -- 1 Node source;
+* td -- 1 Node dest;
+}
+
+/*class CH
+{
+  isA Node;
+
+ }
+
+class Normal_node
+{
+  isA Node;
+  * -- 0..1 Cluster;
+ }*/
