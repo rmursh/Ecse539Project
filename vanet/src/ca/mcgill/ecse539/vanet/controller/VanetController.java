@@ -15,7 +15,6 @@ import org.jfree.chart.plot.*;
 import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
-import org.jfree.util.ShapeUtilities;
 import org.jfree.chart.renderer.xy.XYItemRenderer;
 
 public class VanetController {
@@ -23,16 +22,16 @@ public class VanetController {
 	private static VANET vnt = VANET.getInstance();
 	ArrayList<Integer> Chlist = new ArrayList<>();
 	private static List<Node> nodes=null;
-	public static void main(String[] args) {
-    ReadFile();
+	public void doCalculationsAndPlot(String fp) {
+		ReadFile(fp);
     	
-    	for (Time t : vnt.getTimes())
-    	{
-    		nodes= getnodesbyFrameNumber(t.getTimeframe());
-    		for (Node n : nodes)
-    		  System.out.println(n.getId()+ " " + n.getPositionX()+ " " + n.getPositionY() + " " + n.getSpeed() + " " + n.getDirection() +" " + n.getTime().toString()+ "\n");
-    	 
-    	}
+	    	for (Time t : vnt.getTimes())
+	    	{
+	    		nodes= getnodesbyFrameNumber(t.getTimeframe());
+//	    		for (Node n : nodes)
+//	    		  System.out.println(n.getId()+ " " + n.getPositionX()+ " " + n.getPositionY() + " " + n.getSpeed() + " " + n.getDirection() +" " + n.getTime().toString()+ "\n");
+	    	 
+	    	}
     
     	JFreeChart chart = ChartFactory.createScatterPlot(
             "Scatter Plot", // chart title
@@ -71,8 +70,11 @@ public class VanetController {
 	    return result;
 	}
 
-	public VanetController() {
 
+	public VanetController(String path) {
+
+		doCalculationsAndPlot(path);
+		
 	}
 
 	public String CreateTransimission(int Source, int Destination, int TimeFrame) {
@@ -127,12 +129,12 @@ public class VanetController {
 
 	}
 
-	public static String ReadFile() {
+	public static String ReadFile(String path) {
 		Scanner read = null;
 		int X, Y, ID, TR;
 		float D, S;
 		try {
-			read = new Scanner(new BufferedReader(new FileReader("d.txt")));
+			read = new Scanner(new BufferedReader(new FileReader(path)));
 		} catch (Exception e) {
 			return e.toString();
 		}
