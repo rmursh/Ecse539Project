@@ -36,9 +36,15 @@ public class VanetPage extends JFrame {
 
 	private static final long serialVersionUID = -4426310869335015542L;	
 	private JLabel inputLabel = new JLabel();
-	private JButton addFileButton = new JButton();;
+	private JButton addFileButton = new JButton();
+	private JLabel xRangeLabel = new JLabel();
+	private JButton addXRangeButton = new JButton();
+	private JTextArea inputX = new JTextArea();
+	private JLabel yRangeLabel = new JLabel();
+	private JButton addYRangeButton = new JButton();
+	private JTextArea inputY = new JTextArea();
 	private JTextArea inputFilepath = new JTextArea();
-
+    private VanetController Vc;
 	public VanetPage() {
 		initComponents();
 	}
@@ -52,7 +58,10 @@ public class VanetPage extends JFrame {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				addFileButtonActionPerformed(evt);
 			}
-		});		
+		});	
+		
+		xRangeLabel.setText("Enter Maximum X Range View > 0 ");
+		yRangeLabel.setText("Enter Maximum Y Range View > 0 ");
 		GroupLayout layout = new GroupLayout(getContentPane());
 		getContentPane().setLayout(layout);
 		layout.setAutoCreateGaps(true);
@@ -62,12 +71,20 @@ public class VanetPage extends JFrame {
 				.addComponent(inputLabel)
 				.addComponent(inputFilepath)
 				.addComponent(addFileButton)
+				.addComponent(xRangeLabel)
+				.addComponent(inputX)
+				.addComponent(yRangeLabel)
+				.addComponent(inputY)
 				);
 		layout.setVerticalGroup(
 				layout.createSequentialGroup()
 				.addComponent(inputLabel)
 				.addComponent(inputFilepath)
 				.addComponent(addFileButton)
+				.addComponent(xRangeLabel)
+				.addComponent(inputX)
+				.addComponent(yRangeLabel)
+				.addComponent(inputY)
 				);
 
 		
@@ -80,14 +97,32 @@ public class VanetPage extends JFrame {
 		// TODO
 		if(!inputFilepath.getText().equals("") )
 		{
-			VanetController Vc = new VanetController(inputFilepath.getText());
+			if(inputX.getText().equals("")&&inputY.getText().equals(""))
+			{
+				Vc = new VanetController(inputFilepath.getText(), 0, 0);
+			}
+			else{
+				if(inputX.getText().equals("")){
+					Vc = new VanetController(inputFilepath.getText(), 1000, Double.parseDouble(inputY.getText()));	
+				}
+				else if(inputY.getText().equals("")){
+					Vc = new VanetController(inputFilepath.getText(), Double.parseDouble(inputX.getText()), 100);
+				}
+				else{
+					Vc = new VanetController(inputFilepath.getText(), Double.parseDouble(inputX.getText()), Double.parseDouble(inputY.getText()));	
+				}
+				
+			}
+			
 		}
 		else{
 			
 		}
 
 	}
-
-
-
+	
 }
+
+
+
+

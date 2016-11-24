@@ -5,6 +5,7 @@ import java.awt.Shape;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.geom.Ellipse2D;
+import java.awt.geom.Rectangle2D;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -16,6 +17,7 @@ import java.util.Scanner;
 import javax.swing.Timer;
 
 import org.jfree.chart.*;
+import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.*;
 import org.jfree.data.xy.XYDataset;
@@ -25,12 +27,25 @@ import org.jfree.chart.renderer.xy.XYItemRenderer;
 
 public class VanetController {
 
+	private double xRange = 1000;
+	private double yRange = 100;
 	private static final int DELAY = 1000;
 	private static VANET vnt = VANET.getInstance();
 	ArrayList<Integer> Chlist = new ArrayList<>();
 	private static List<Node> nodes=null;
+	private static List<Node> clusterHeads=null;
+	private static List<Node> normalNodes=null;
 	private JFreeChart chart = null;
 	private Shape circle = new Ellipse2D.Double(-2.0, -2.0, 6.0, 6.0);
+	private Shape square = new Rectangle2D.Double(-2.0, -2.0, 6.0, 6.0);
+	
+	public void setXRange(double x){
+		xRange = x;
+	}
+	
+	public void setYRange(double y){
+		yRange = y;
+	}
 	public void doCalculationsAndPlot(String fp) {
 		ReadFile(fp);
 		// Initialization of the timer. 1 second delay and this class as ActionListener
@@ -42,9 +57,7 @@ public class VanetController {
             	try{
             		  //...Perform a task...
                 	int currentFrame = ((Time)t.next()).getTimeframe();
-            		nodes= getnodesbyFrameNumber(currentFrame);
-                	
-                	    	    
+            		nodes= getnodesbyFrameNumber(currentFrame);          	           	    	    
     	        	JFreeChart chartnew = ChartFactory.createScatterPlot(
     	                "Car Positions at Time " + currentFrame, // chart title
     	                "X", // x axis label
@@ -57,11 +70,18 @@ public class VanetController {
     	                );
     	
     	        	XYPlot plot = (XYPlot) chartnew.getPlot();
-    	        	XYItemRenderer renderer  = plot.getRenderer();
+    	        	XYItemRenderer renderer  = plot.getRenderer(0);
     	        	renderer.setSeriesShape(0, circle);
     	        	renderer.setSeriesPaint(0,Color.BLUE);
+    	        	renderer.setSeriesShape(1, square);
+    	        	renderer.setSeriesPaint(1,Color.BLUE);
     	        	plot.setBackgroundPaint(Color.white);
     	            plot.setRangeGridlinePaint(Color.black);
+    	            if(xRange != 0 && yRange != 0){
+        	            ValueAxis yAxis = plot.getRangeAxis();
+        	            yAxis.setRange(-10.0, yRange);
+        	            plot.getDomainAxis().setRange(0.00, xRange);	
+    	            }
     	            // create and display a frame...
     	            ChartPanel panel = frame.getChartPanel();
     	            panel.setChart(chartnew);
@@ -78,24 +98,41 @@ public class VanetController {
 
         timer.start();
 
-    
     }
 	
 	private static XYDataset createDataset() {
 	    XYSeriesCollection result = new XYSeriesCollection();
-	    XYSeries series = new XYSeries("Node");
+	    XYSeries series1 = new XYSeries("Node");
+	    XYSeries series2 = new XYSeries("ClusterHead");
 	    for (Node n : nodes) {
-	        double x = n.getPositionX();
-	        double y = n.getPositionY();
-	        series.add(x, y);
+	    	//Remember to remove
+	    	if(n.getDirection() >= 2){
+	    		n.setIs_CH(new Cluster(0, vnt, n));
+	    	}
+	    	if(n.hasIs_CH())
+	    	{
+		        double x = n.getPositionX();
+		        double y = n.getPositionY();
+		        series1.add(x, y);
+	    	}
+	    	else{
+	    		
+	    		double x = n.getPositionX();
+		        double y = n.getPositionY();
+		        series2.add(x, y);
+	    	}
+
 	    }
-	    result.addSeries(series);
+	    result.addSeries(series1);
+	    result.addSeries(series2);
 	    return result;
 	}
 
 
-	public VanetController(String path) {
+	public VanetController(String path, double x, double y) {
 
+		xRange = x;
+		yRange = y;
 		doCalculationsAndPlot(path);
 		
 	}
