@@ -99,7 +99,7 @@ public class VanetPage extends JFrame {
 		{
 			if(inputX.getText().equals("")&&inputY.getText().equals(""))
 			{
-				Vc = new VanetController(inputFilepath.getText(), 0, 0);
+				Vc = new VanetController(inputFilepath.getText(), -1, -1);
 			}
 			else{
 				if(inputX.getText().equals("")){

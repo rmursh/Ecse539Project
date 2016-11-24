@@ -77,7 +77,7 @@ public class VanetController {
     	        	renderer.setSeriesPaint(1,Color.BLUE);
     	        	plot.setBackgroundPaint(Color.white);
     	            plot.setRangeGridlinePaint(Color.black);
-    	            if(xRange != 0 && yRange != 0){
+    	            if(xRange != -1 && yRange != -1){
         	            ValueAxis yAxis = plot.getRangeAxis();
         	            yAxis.setRange(-10.0, yRange);
         	            plot.getDomainAxis().setRange(0.00, xRange);	
