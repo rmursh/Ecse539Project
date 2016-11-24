@@ -2,13 +2,19 @@ package ca.mcgill.ecse539.vanet.controller;
 
 import java.awt.Color;
 import java.awt.Shape;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.geom.Ellipse2D;
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import ca.mcgill.ecse539.vanet.model.*;
 import java.util.Scanner;
+
+import javax.swing.Timer;
+
 import org.jfree.chart.*;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.*;
@@ -19,42 +25,144 @@ import org.jfree.chart.renderer.xy.XYItemRenderer;
 
 public class VanetController {
 
+	private static final int DELAY = 1000;
 	private static VANET vnt = VANET.getInstance();
 	ArrayList<Integer> Chlist = new ArrayList<>();
 	private static List<Node> nodes=null;
+	private JFreeChart chart = null;
+	private Shape circle = new Ellipse2D.Double(-2.0, -2.0, 6.0, 6.0);
 	public void doCalculationsAndPlot(String fp) {
 		ReadFile(fp);
+		// Initialization of the timer. 1 second delay and this class as ActionListener
+		ChartFrame frame = new ChartFrame("Car Positions", chart);
+		Iterator t = vnt.getTimes().iterator();
+//		nodes= getnodesbyFrameNumber(((Time)t.next()).getTimeframe());
+//
+//  	    
+//    	chart = ChartFactory.createScatterPlot(
+//            "Car Positions at Time 0", // chart title
+//            "X", // x axis label
+//            "Y", // y axis label
+//            createDataset(), // data  ***-----PROBLEM------***
+//            PlotOrientation.VERTICAL,
+//            true, // include legend
+//            true, // tooltips
+//            false // urls
+//            );
+//
+//    	
+//    	XYPlot plot = (XYPlot) chart.getPlot();
+//    	XYItemRenderer renderer  = plot.getRenderer();
+//    	renderer.setSeriesShape(0, circle);
+//    	renderer.setSeriesPaint(0,Color.BLUE);
+//    	plot.setBackgroundPaint(Color.white);
+//        plot.setRangeGridlinePaint(Color.black);
+//        // create and display a frame...
+//        ChartFrame frame = new ChartFrame("Car Positions", chart);
+//        ChartPanel panel = frame.getChartPanel();
+//        panel.setChart(chart);
+//        frame.pack();
+//        frame.setVisible(true);
+        ActionListener taskPerformer = new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+            	try{
+            		  //...Perform a task...
+                	int currentFrame = ((Time)t.next()).getTimeframe();
+            		nodes= getnodesbyFrameNumber(currentFrame);
+                	
+                	    	    
+    	        	JFreeChart chartnew = ChartFactory.createScatterPlot(
+    	                "Car Positions at Time " + currentFrame, // chart title
+    	                "X", // x axis label
+    	                "Y", // y axis label
+    	                createDataset(), // data  ***-----PROBLEM------***
+    	                PlotOrientation.VERTICAL,
+    	                true, // include legend
+    	                true, // tooltips
+    	                false // urls
+    	                );
     	
-	    	for (Time t : vnt.getTimes())
-	    	{
-	    		nodes= getnodesbyFrameNumber(t.getTimeframe());
-//	    		for (Node n : nodes)
-//	    		  System.out.println(n.getId()+ " " + n.getPositionX()+ " " + n.getPositionY() + " " + n.getSpeed() + " " + n.getDirection() +" " + n.getTime().toString()+ "\n");
-	    	 
-	    	}
-    
-    	JFreeChart chart = ChartFactory.createScatterPlot(
-            "Scatter Plot", // chart title
-            "X", // x axis label
-            "Y", // y axis label
-            createDataset(), // data  ***-----PROBLEM------***
-            PlotOrientation.VERTICAL,
-            true, // include legend
-            true, // tooltips
-            false // urls
-            );
+    	        	XYPlot plot = (XYPlot) chartnew.getPlot();
+    	        	XYItemRenderer renderer  = plot.getRenderer();
+    	        	renderer.setSeriesShape(0, circle);
+    	        	renderer.setSeriesPaint(0,Color.BLUE);
+    	        	plot.setBackgroundPaint(Color.white);
+    	            plot.setRangeGridlinePaint(Color.black);
+    	            // create and display a frame...
+    	            ChartPanel panel = frame.getChartPanel();
+    	            panel.setChart(chartnew);
+    	            frame.pack();
+    	            frame.setVisible(true);
+            	}
+            	catch(Exception e){
+            		
+            	}
+            
+            }
+        };
+        Timer timer = new Timer(DELAY ,taskPerformer);
 
-    	Shape circle = new Ellipse2D.Double(-2.0, -2.0, 6.0, 6.0);
-    	XYPlot plot = (XYPlot) chart.getPlot();
-    	XYItemRenderer renderer  = plot.getRenderer();
-    	renderer.setSeriesShape(0, circle);
-    	renderer.setSeriesPaint(0,Color.BLUE);
-    	plot.setBackgroundPaint(Color.white);
-        plot.setRangeGridlinePaint(Color.black);
-        // create and display a frame...
-        ChartFrame frame = new ChartFrame("Car Positions", chart);
-        frame.pack();
-        frame.setVisible(true);
+        timer.start();
+
+
+//	   nodes= getnodesbyFrameNumber(vnt.getTimes().get(0).getTimeframe());
+//
+//    
+//    	chart = ChartFactory.createScatterPlot(
+//            "Car Positions at Time 0", // chart title
+//            "X", // x axis label
+//            "Y", // y axis label
+//            createDataset(), // data  ***-----PROBLEM------***
+//            PlotOrientation.VERTICAL,
+//            true, // include legend
+//            true, // tooltips
+//            false // urls
+//            );
+//
+//    	
+//    	XYPlot plot = (XYPlot) chart.getPlot();
+//    	XYItemRenderer renderer  = plot.getRenderer();
+//    	renderer.setSeriesShape(0, circle);
+//    	renderer.setSeriesPaint(0,Color.BLUE);
+//    	plot.setBackgroundPaint(Color.white);
+//        plot.setRangeGridlinePaint(Color.black);
+//        // create and display a frame...
+//        ChartFrame frame = new ChartFrame("Car Positions", chart);
+//        ChartPanel panel = frame.getChartPanel();
+//        panel.setChart(chart);
+//        frame.pack();
+//        frame.setVisible(true);
+//
+//    	for (int i = 1 ; i < 5; i++ ) // vnt.getTimes().size()
+//    	{
+//    		
+//    		nodes= getnodesbyFrameNumber(vnt.getTimes().get(i).getTimeframe());
+//
+//    	    
+//        	JFreeChart chartnew = ChartFactory.createScatterPlot(
+//                "Car Positions at Time " + vnt.getTimes().get(i).getTimeframe(), // chart title
+//                "X", // x axis label
+//                "Y", // y axis label
+//                createDataset(), // data  ***-----PROBLEM------***
+//                PlotOrientation.VERTICAL,
+//                true, // include legend
+//                true, // tooltips
+//                false // urls
+//                );
+//
+//        	plot = (XYPlot) chartnew.getPlot();
+//        	renderer  = plot.getRenderer();
+//        	renderer.setSeriesShape(0, circle);
+//        	renderer.setSeriesPaint(0,Color.BLUE);
+//        	plot.setBackgroundPaint(Color.white);
+//            plot.setRangeGridlinePaint(Color.black);
+//            // create and display a frame...
+//            panel = frame.getChartPanel();
+//            panel.setChart(chartnew);
+//            frame.pack();
+//            frame.setVisible(true);
+//            
+//    	}
     
     }
 	
