@@ -24,6 +24,7 @@ import org.jfree.chart.plot.*;
 import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
+import org.jfree.util.ShapeUtilities;
 import org.jfree.chart.renderer.xy.XYItemRenderer;
 
 public class VanetController {
@@ -76,8 +77,8 @@ public class VanetController {
     	        	XYItemRenderer renderer  = plot.getRenderer(0);
     	        	renderer.setSeriesShape(0, circle);
     	        	renderer.setSeriesPaint(0,Color.BLUE);
-    	        	renderer.setSeriesShape(1, square);
-    	        	renderer.setSeriesPaint(1,Color.BLUE);
+    	        	renderer.setSeriesShape(1, ShapeUtilities.createDiagonalCross(3, 1));
+    	        	renderer.setSeriesPaint(1,Color.RED);
     	        	plot.setBackgroundPaint(Color.white);
     	            plot.setRangeGridlinePaint(Color.black);
     	            if(xRange != -1 && yRange != -1){
@@ -111,7 +112,7 @@ public class VanetController {
 
 	    for (Node n : nodes) {
 
-	    	if(!n.hasIs_CH())
+	    	if(!cluster_head.contains(n))
 	    	{
 		        double x = n.getPositionX();
 		        double y = n.getPositionY();
@@ -318,7 +319,7 @@ public class VanetController {
 				}
 			}
 
-			System.out.println(cluster_head.size());
+			//System.out.println(cluster_head.size());
 //	    	int i = 1;
 //			for(Node n : cluster_head){
 //				if(cluster_head.contains(n)){
