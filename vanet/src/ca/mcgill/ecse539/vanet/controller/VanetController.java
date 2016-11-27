@@ -41,6 +41,9 @@ public class VanetController {
 	private JFreeChart chart = null;
 	private Shape circle = new Ellipse2D.Double(-2.0, -2.0, 6.0, 6.0);
 	private Shape square = new Rectangle2D.Double(-2.0, -2.0, 6.0, 6.0);
+	
+	
+	
 
 	public void setXRange(double x){
 		xRange = x;
