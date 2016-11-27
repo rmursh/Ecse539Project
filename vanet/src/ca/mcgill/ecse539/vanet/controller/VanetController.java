@@ -37,7 +37,7 @@ public class VanetController {
 	private static List<Node> nodes=null;
 	private static List<Cluster> clusters=null;
 	private static List<Node> clusterHeads=null;
-
+    private static int clusterCount = 1;
 	private JFreeChart chart = null;
 	private Shape circle = new Ellipse2D.Double(-2.0, -2.0, 6.0, 6.0);
 	private Shape square = new Rectangle2D.Double(-2.0, -2.0, 6.0, 6.0);
@@ -61,11 +61,12 @@ public class VanetController {
             		Time temp = (Time) t.next();
                 	int currentFrame = (temp.getTimeframe());
             		nodes= getnodesbyFrameNumber(currentFrame);  
+            		XYDataset data= createDataset(temp);
     	        	JFreeChart chartnew = ChartFactory.createScatterPlot(
     	                "Car Positions at Time " + currentFrame, // chart title
     	                "X", // x axis label
     	                "Y", // y axis label
-    	                createDataset(temp), // data  ***-----PROBLEM------***
+    	                data, // data  ***-----PROBLEM------***
     	                PlotOrientation.VERTICAL,
     	                true, // include legend
     	                true, // tooltips
@@ -90,6 +91,8 @@ public class VanetController {
     	            panel.setChart(chartnew);
     	            frame.pack();
     	            frame.setVisible(true);
+    	            System.out.println("Clusterhead : " + nodes.get(0).getCuster().getCH().getId()+ " Cluster: " + nodes.get(0).getCuster().getVoting_ID()+ " " + nodes.get(0).getTime().getTimeframe());
+    	    	    //System.out.println(CreateTransmission(1,15,temp.getTimeframe()));
             	}
             	catch(Exception e){
             		
@@ -108,9 +111,9 @@ public class VanetController {
 //        System.out.println(vnt.getClusters());
 	    XYSeriesCollection result = new XYSeriesCollection();
 	    XYSeries series1 = new XYSeries("Node");
-	    XYSeries series2 = new XYSeries("ClusterHead");
+
 	    List<Node> ch = CalculateVariables(t);
-        int clusterCount = 1;
+
 	    for(Node n : nodes){
 	    	if(ch.contains(n))
 	    	{
@@ -123,22 +126,55 @@ public class VanetController {
 	    		clusterCount++;
 	    	}
 	    }
-        for (Node n : nodes) {
-	    	if(!n.hasIs_CH())
-	    	{
-		        double x = n.getPositionX();
-		        double y = n.getPositionY();
-		        series1.add(x, y);
-	    	}
-	    	else{
 
-	    		double x = n.getPositionX();
-		        double y = n.getPositionY();
-		        series2.add(x, y);
+	    XYSeries series2 = new XYSeries("ClusterHead");
+	    ArrayList<XYSeries> xyList = new ArrayList<XYSeries>();
+	    int i = 0;
+	    for(Cluster cluster : vnt.getClusters()){
+	    	int timeFrame = cluster.getCH().getTime().getTimeframe(); 
+	        XYSeries xy = new XYSeries("Normal Nodes " + i);
+            
+	    	if(timeFrame == t.getTimeframe()){
+                i++;
+	    		for(Node n :cluster.getClustermembers()){
+	    			if(!n.hasIs_CH()){
+	    				double x = n.getPositionX();
+				        double y = n.getPositionY();
+				        xy.add(x, y);
+				        
+	    			}
+	    	    	else{
+			    		double x = n.getPositionX();
+				        double y = n.getPositionY();
+				        series2.add(x, y);
+	    		    }
+	    		}
+	    	   
+                xyList.add(xy);
+	    		//result.addSeries(xy);
+	    		//result.addSeries(series2);
 	    	}
-
 	    }
-	    result.addSeries(series1);
+//        for (Node n : nodes) {
+//	    	if(!n.hasIs_CH())
+//	    	{
+//		        double x = n.getPositionX();
+//		        double y = n.getPositionY();
+//		        series1.add(x, y);
+//	    	}
+//	    	else{
+//
+//	    		double x = n.getPositionX();
+//		        double y = n.getPositionY();
+//		        series2.add(x, y);
+//	    	}
+//
+//	    }
+	    //result.addSeries(series1);
+
+		for(int j =0; j < xyList.size(); j++){
+			result.addSeries(xyList.get(j));
+		}
 	    result.addSeries(series2);
 	    return result;
 	}
@@ -152,7 +188,7 @@ public class VanetController {
 		
 	}
 
-	public String CreateTransimission(int Source, int Destination, int TimeFrame) {
+	public static int CreateTransmission(int Source, int Destination, int TimeFrame) {
 		Time TF = null;
 		Node src = null;
 		Node dst = null;
@@ -175,24 +211,36 @@ public class VanetController {
 		src_ch = src.getCuster().getCH();
 		dst_ch = dst.getCuster().getCH();
 		while (!exit) {
-			for (Node nighbour : src_ch.getNeighbors()) {
-				if (nighbour == dst_ch) {
+			for (Node nighbour : src_ch.getNeighbors()) 
+			{
+				if (!nighbour.getCuster().getCH().equals(src_ch))
+				{
+					if(nighbour.getCuster().getCH().equals(dst_ch))
+					{
 					exit = true;
+					hopcount++;
 					break;
-				} else if (nighbour.hasIs_CH() == true) {
-					src_ch = nighbour;
+					}
+				 
+				else
+				{
+					src_ch = nighbour.getCuster().getCH();
+					hopcount++;
+					break;
 				}
+					
+				} // outer if end
 
-			}
-			hopcount++;
-		}
-		try {
-			Transmission TR = new Transmission(hopcount, vnt, src, dst);
-		} catch (Exception e) {
-			return e.toString();
-		}
+			}// for end
+			
+		}// while end
+//		try {
+//			Transmission TR = new Transmission(hopcount, vnt, src, dst);
+//		} catch (Exception e) {
+//			System.out.println(e.toString());
+//		}
 
-		return "";
+		return hopcount;
 
 	}
 
