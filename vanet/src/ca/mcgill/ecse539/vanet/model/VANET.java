@@ -27,7 +27,6 @@ public class VANET
   private List<Time> times;
   private List<Node> nodes;
   private List<Cluster> clusters;
-  private List<Transmission> transmissions;
 
   //------------------------
   // CONSTRUCTOR
@@ -41,7 +40,6 @@ public class VANET
     times = new ArrayList<Time>();
     nodes = new ArrayList<Node>();
     clusters = new ArrayList<Cluster>();
-    transmissions = new ArrayList<Transmission>();
   }
 
   public static VANET getInstance()
@@ -183,36 +181,6 @@ public class VANET
   public int indexOfCluster(Cluster aCluster)
   {
     int index = clusters.indexOf(aCluster);
-    return index;
-  }
-
-  public Transmission getTransmission(int index)
-  {
-    Transmission aTransmission = transmissions.get(index);
-    return aTransmission;
-  }
-
-  public List<Transmission> getTransmissions()
-  {
-    List<Transmission> newTransmissions = Collections.unmodifiableList(transmissions);
-    return newTransmissions;
-  }
-
-  public int numberOfTransmissions()
-  {
-    int number = transmissions.size();
-    return number;
-  }
-
-  public boolean hasTransmissions()
-  {
-    boolean has = transmissions.size() > 0;
-    return has;
-  }
-
-  public int indexOfTransmission(Transmission aTransmission)
-  {
-    int index = transmissions.indexOf(aTransmission);
     return index;
   }
 
@@ -365,9 +333,9 @@ public class VANET
     return 0;
   }
 
-  public Cluster addCluster(int aVoting_ID)
+  public Cluster addCluster(int aVoting_ID, Time aTime)
   {
-    return new Cluster(aVoting_ID, this);
+    return new Cluster(aVoting_ID, this, aTime);
   }
 
   public boolean addCluster(Cluster aCluster)
@@ -432,78 +400,6 @@ public class VANET
     return wasAdded;
   }
 
-  public static int minimumNumberOfTransmissions()
-  {
-    return 0;
-  }
-
-  public Transmission addTransmission(int aHopCount, Node aSource, Node aDest)
-  {
-    return new Transmission(aHopCount, this, aSource, aDest);
-  }
-
-  public boolean addTransmission(Transmission aTransmission)
-  {
-    boolean wasAdded = false;
-    if (transmissions.contains(aTransmission)) { return false; }
-    VANET existingVANET = aTransmission.getVANET();
-    boolean isNewVANET = existingVANET != null && !this.equals(existingVANET);
-    if (isNewVANET)
-    {
-      aTransmission.setVANET(this);
-    }
-    else
-    {
-      transmissions.add(aTransmission);
-    }
-    wasAdded = true;
-    return wasAdded;
-  }
-
-  public boolean removeTransmission(Transmission aTransmission)
-  {
-    boolean wasRemoved = false;
-    //Unable to remove aTransmission, as it must always have a vANET
-    if (!this.equals(aTransmission.getVANET()))
-    {
-      transmissions.remove(aTransmission);
-      wasRemoved = true;
-    }
-    return wasRemoved;
-  }
-
-  public boolean addTransmissionAt(Transmission aTransmission, int index)
-  {  
-    boolean wasAdded = false;
-    if(addTransmission(aTransmission))
-    {
-      if(index < 0 ) { index = 0; }
-      if(index > numberOfTransmissions()) { index = numberOfTransmissions() - 1; }
-      transmissions.remove(aTransmission);
-      transmissions.add(index, aTransmission);
-      wasAdded = true;
-    }
-    return wasAdded;
-  }
-
-  public boolean addOrMoveTransmissionAt(Transmission aTransmission, int index)
-  {
-    boolean wasAdded = false;
-    if(transmissions.contains(aTransmission))
-    {
-      if(index < 0 ) { index = 0; }
-      if(index > numberOfTransmissions()) { index = numberOfTransmissions() - 1; }
-      transmissions.remove(aTransmission);
-      transmissions.add(index, aTransmission);
-      wasAdded = true;
-    } 
-    else 
-    {
-      wasAdded = addTransmissionAt(aTransmission, index);
-    }
-    return wasAdded;
-  }
-
   public void delete()
   {
     while (times.size() > 0)
@@ -525,13 +421,6 @@ public class VANET
       Cluster aCluster = clusters.get(clusters.size() - 1);
       aCluster.delete();
       clusters.remove(aCluster);
-    }
-    
-    while (transmissions.size() > 0)
-    {
-      Transmission aTransmission = transmissions.get(transmissions.size() - 1);
-      aTransmission.delete();
-      transmissions.remove(aTransmission);
     }
     
   }

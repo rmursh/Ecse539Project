@@ -4,7 +4,7 @@
 package ca.mcgill.ecse539.vanet.model;
 import java.util.*;
 
-// line 16 "../../../../../model.ump"
+// line 17 "../../../../../model.ump"
 public class Node
 {
 
@@ -27,8 +27,6 @@ public class Node
   private Cluster custer;
   private Time time;
   private Node node;
-  private List<Transmission> ts;
-  private List<Transmission> td;
 
   //------------------------
   // CONSTRUCTOR
@@ -54,8 +52,6 @@ public class Node
     {
       throw new RuntimeException("Unable to create node due to time");
     }
-    ts = new ArrayList<Transmission>();
-    td = new ArrayList<Transmission>();
   }
 
   //------------------------
@@ -215,66 +211,6 @@ public class Node
     return has;
   }
 
-  public Transmission getT(int index)
-  {
-    Transmission aT = ts.get(index);
-    return aT;
-  }
-
-  public List<Transmission> getTs()
-  {
-    List<Transmission> newTs = Collections.unmodifiableList(ts);
-    return newTs;
-  }
-
-  public int numberOfTs()
-  {
-    int number = ts.size();
-    return number;
-  }
-
-  public boolean hasTs()
-  {
-    boolean has = ts.size() > 0;
-    return has;
-  }
-
-  public int indexOfT(Transmission aT)
-  {
-    int index = ts.indexOf(aT);
-    return index;
-  }
-
-  public Transmission getTd(int index)
-  {
-    Transmission aTd = td.get(index);
-    return aTd;
-  }
-
-  public List<Transmission> getTd()
-  {
-    List<Transmission> newTd = Collections.unmodifiableList(td);
-    return newTd;
-  }
-
-  public int numberOfTd()
-  {
-    int number = td.size();
-    return number;
-  }
-
-  public boolean hasTd()
-  {
-    boolean has = td.size() > 0;
-    return has;
-  }
-
-  public int indexOfTd(Transmission aTd)
-  {
-    int index = td.indexOf(aTd);
-    return index;
-  }
-
   public boolean setVANET(VANET aVANET)
   {
     boolean wasSet = false;
@@ -418,150 +354,6 @@ public class Node
     return wasSet;
   }
 
-  public static int minimumNumberOfTs()
-  {
-    return 0;
-  }
-
-  public Transmission addT(int aHopCount, VANET aVANET, Node aDest)
-  {
-    return new Transmission(aHopCount, aVANET, this, aDest);
-  }
-
-  public boolean addT(Transmission aT)
-  {
-    boolean wasAdded = false;
-    if (ts.contains(aT)) { return false; }
-    Node existingSource = aT.getSource();
-    boolean isNewSource = existingSource != null && !this.equals(existingSource);
-    if (isNewSource)
-    {
-      aT.setSource(this);
-    }
-    else
-    {
-      ts.add(aT);
-    }
-    wasAdded = true;
-    return wasAdded;
-  }
-
-  public boolean removeT(Transmission aT)
-  {
-    boolean wasRemoved = false;
-    //Unable to remove aT, as it must always have a source
-    if (!this.equals(aT.getSource()))
-    {
-      ts.remove(aT);
-      wasRemoved = true;
-    }
-    return wasRemoved;
-  }
-
-  public boolean addTAt(Transmission aT, int index)
-  {  
-    boolean wasAdded = false;
-    if(addT(aT))
-    {
-      if(index < 0 ) { index = 0; }
-      if(index > numberOfTs()) { index = numberOfTs() - 1; }
-      ts.remove(aT);
-      ts.add(index, aT);
-      wasAdded = true;
-    }
-    return wasAdded;
-  }
-
-  public boolean addOrMoveTAt(Transmission aT, int index)
-  {
-    boolean wasAdded = false;
-    if(ts.contains(aT))
-    {
-      if(index < 0 ) { index = 0; }
-      if(index > numberOfTs()) { index = numberOfTs() - 1; }
-      ts.remove(aT);
-      ts.add(index, aT);
-      wasAdded = true;
-    } 
-    else 
-    {
-      wasAdded = addTAt(aT, index);
-    }
-    return wasAdded;
-  }
-
-  public static int minimumNumberOfTd()
-  {
-    return 0;
-  }
-
-  public Transmission addTd(int aHopCount, VANET aVANET, Node aSource)
-  {
-    return new Transmission(aHopCount, aVANET, aSource, this);
-  }
-
-  public boolean addTd(Transmission aTd)
-  {
-    boolean wasAdded = false;
-    if (td.contains(aTd)) { return false; }
-    Node existingDest = aTd.getDest();
-    boolean isNewDest = existingDest != null && !this.equals(existingDest);
-    if (isNewDest)
-    {
-      aTd.setDest(this);
-    }
-    else
-    {
-      td.add(aTd);
-    }
-    wasAdded = true;
-    return wasAdded;
-  }
-
-  public boolean removeTd(Transmission aTd)
-  {
-    boolean wasRemoved = false;
-    //Unable to remove aTd, as it must always have a dest
-    if (!this.equals(aTd.getDest()))
-    {
-      td.remove(aTd);
-      wasRemoved = true;
-    }
-    return wasRemoved;
-  }
-
-  public boolean addTdAt(Transmission aTd, int index)
-  {  
-    boolean wasAdded = false;
-    if(addTd(aTd))
-    {
-      if(index < 0 ) { index = 0; }
-      if(index > numberOfTd()) { index = numberOfTd() - 1; }
-      td.remove(aTd);
-      td.add(index, aTd);
-      wasAdded = true;
-    }
-    return wasAdded;
-  }
-
-  public boolean addOrMoveTdAt(Transmission aTd, int index)
-  {
-    boolean wasAdded = false;
-    if(td.contains(aTd))
-    {
-      if(index < 0 ) { index = 0; }
-      if(index > numberOfTd()) { index = numberOfTd() - 1; }
-      td.remove(aTd);
-      td.add(index, aTd);
-      wasAdded = true;
-    } 
-    else 
-    {
-      wasAdded = addTdAt(aTd, index);
-    }
-    return wasAdded;
-  }
-
   public void delete()
   {
     VANET placeholderVANET = vANET;
@@ -585,16 +377,6 @@ public class Node
       Node placeholderNode = node;
       this.node = null;
       placeholderNode.removeNeighbor(this);
-    }
-    for(int i=ts.size(); i > 0; i--)
-    {
-      Transmission aT = ts.get(i - 1);
-      aT.delete();
-    }
-    for(int i=td.size(); i > 0; i--)
-    {
-      Transmission aTd = td.get(i - 1);
-      aTd.delete();
     }
   }
 

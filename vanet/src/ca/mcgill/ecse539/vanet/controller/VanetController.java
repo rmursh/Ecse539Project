@@ -149,7 +149,7 @@ public class VanetController {
 	    List<XYSeries> xyList2 = new ArrayList<XYSeries>();
 	    for(int i =0 ;  i < numClusters+2; i++){
 	    	xyList1.add(new XYSeries("Cluster " + i));
-			Cluster cluster = new Cluster(i, vnt);
+			Cluster cluster = new Cluster(i, vnt, t);
 	    }
 	    XYSeries clusterHeads = new XYSeries("ClusterHead");
 	    XYSeries leftovers = new XYSeries("Cluster" + numClusters);
@@ -208,9 +208,8 @@ public class VanetController {
 		        clusterHeads.add(x, y);
 
 	    	}
+	    
 	    }
-
-
 
         for(XYSeries xy : xyList1){
     	    result.addSeries(xy);
@@ -218,6 +217,7 @@ public class VanetController {
         result.addSeries(leftovers);
         result.addSeries(leftovers2);
 	    result.addSeries(clusterHeads);
+
 	    return result;
 	}
 

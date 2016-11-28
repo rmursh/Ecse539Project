@@ -4,7 +4,7 @@
 package ca.mcgill.ecse539.vanet.model;
 import java.util.*;
 
-// line 33 "../../../../../model.ump"
+// line 34 "../../../../../model.ump"
 public class Cluster
 {
 
@@ -17,19 +17,25 @@ public class Cluster
 
   //Cluster Associations
   private VANET vANET;
+  private Time time;
   private List<Node> clustermembers;
 
   //------------------------
   // CONSTRUCTOR
   //------------------------
 
-  public Cluster(int aVoting_ID, VANET aVANET)
+  public Cluster(int aVoting_ID, VANET aVANET, Time aTime)
   {
     voting_ID = aVoting_ID;
     boolean didAddVANET = setVANET(aVANET);
     if (!didAddVANET)
     {
       throw new RuntimeException("Unable to create cluster due to vANET");
+    }
+    boolean didAddTime = setTime(aTime);
+    if (!didAddTime)
+    {
+      throw new RuntimeException("Unable to create cluster due to time");
     }
     clustermembers = new ArrayList<Node>();
   }
@@ -54,6 +60,11 @@ public class Cluster
   public VANET getVANET()
   {
     return vANET;
+  }
+
+  public Time getTime()
+  {
+    return time;
   }
 
   public Node getClustermember(int index)
@@ -101,6 +112,25 @@ public class Cluster
       existingVANET.removeCluster(this);
     }
     vANET.addCluster(this);
+    wasSet = true;
+    return wasSet;
+  }
+
+  public boolean setTime(Time aTime)
+  {
+    boolean wasSet = false;
+    if (aTime == null)
+    {
+      return wasSet;
+    }
+
+    Time existingTime = time;
+    time = aTime;
+    if (existingTime != null && !existingTime.equals(aTime))
+    {
+      existingTime.removeCluster(this);
+    }
+    time.addCluster(this);
     wasSet = true;
     return wasSet;
   }
@@ -181,6 +211,9 @@ public class Cluster
     VANET placeholderVANET = vANET;
     this.vANET = null;
     placeholderVANET.removeCluster(this);
+    Time placeholderTime = time;
+    this.time = null;
+    placeholderTime.removeCluster(this);
     while( !clustermembers.isEmpty() )
     {
       clustermembers.get(0).setCuster(null);
@@ -193,7 +226,8 @@ public class Cluster
     String outputString = "";
     return super.toString() + "["+
             "voting_ID" + ":" + getVoting_ID()+ "]" + System.getProperties().getProperty("line.separator") +
-            "  " + "vANET = "+(getVANET()!=null?Integer.toHexString(System.identityHashCode(getVANET())):"null")
+            "  " + "vANET = "+(getVANET()!=null?Integer.toHexString(System.identityHashCode(getVANET())):"null") + System.getProperties().getProperty("line.separator") +
+            "  " + "time = "+(getTime()!=null?Integer.toHexString(System.identityHashCode(getTime())):"null")
      + outputString;
   }
 }

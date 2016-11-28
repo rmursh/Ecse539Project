@@ -18,6 +18,7 @@ public class Time
   //Time Associations
   private VANET vANET;
   private List<Node> nodes;
+  private List<Cluster> clusters;
 
   //------------------------
   // CONSTRUCTOR
@@ -32,6 +33,7 @@ public class Time
       throw new RuntimeException("Unable to create time due to vANET");
     }
     nodes = new ArrayList<Node>();
+    clusters = new ArrayList<Cluster>();
   }
 
   //------------------------
@@ -83,6 +85,36 @@ public class Time
   public int indexOfNode(Node aNode)
   {
     int index = nodes.indexOf(aNode);
+    return index;
+  }
+
+  public Cluster getCluster(int index)
+  {
+    Cluster aCluster = clusters.get(index);
+    return aCluster;
+  }
+
+  public List<Cluster> getClusters()
+  {
+    List<Cluster> newClusters = Collections.unmodifiableList(clusters);
+    return newClusters;
+  }
+
+  public int numberOfClusters()
+  {
+    int number = clusters.size();
+    return number;
+  }
+
+  public boolean hasClusters()
+  {
+    boolean has = clusters.size() > 0;
+    return has;
+  }
+
+  public int indexOfCluster(Cluster aCluster)
+  {
+    int index = clusters.indexOf(aCluster);
     return index;
   }
 
@@ -177,6 +209,78 @@ public class Time
     return wasAdded;
   }
 
+  public static int minimumNumberOfClusters()
+  {
+    return 0;
+  }
+
+  public Cluster addCluster(int aVoting_ID, VANET aVANET)
+  {
+    return new Cluster(aVoting_ID, aVANET, this);
+  }
+
+  public boolean addCluster(Cluster aCluster)
+  {
+    boolean wasAdded = false;
+    if (clusters.contains(aCluster)) { return false; }
+    Time existingTime = aCluster.getTime();
+    boolean isNewTime = existingTime != null && !this.equals(existingTime);
+    if (isNewTime)
+    {
+      aCluster.setTime(this);
+    }
+    else
+    {
+      clusters.add(aCluster);
+    }
+    wasAdded = true;
+    return wasAdded;
+  }
+
+  public boolean removeCluster(Cluster aCluster)
+  {
+    boolean wasRemoved = false;
+    //Unable to remove aCluster, as it must always have a time
+    if (!this.equals(aCluster.getTime()))
+    {
+      clusters.remove(aCluster);
+      wasRemoved = true;
+    }
+    return wasRemoved;
+  }
+
+  public boolean addClusterAt(Cluster aCluster, int index)
+  {  
+    boolean wasAdded = false;
+    if(addCluster(aCluster))
+    {
+      if(index < 0 ) { index = 0; }
+      if(index > numberOfClusters()) { index = numberOfClusters() - 1; }
+      clusters.remove(aCluster);
+      clusters.add(index, aCluster);
+      wasAdded = true;
+    }
+    return wasAdded;
+  }
+
+  public boolean addOrMoveClusterAt(Cluster aCluster, int index)
+  {
+    boolean wasAdded = false;
+    if(clusters.contains(aCluster))
+    {
+      if(index < 0 ) { index = 0; }
+      if(index > numberOfClusters()) { index = numberOfClusters() - 1; }
+      clusters.remove(aCluster);
+      clusters.add(index, aCluster);
+      wasAdded = true;
+    } 
+    else 
+    {
+      wasAdded = addClusterAt(aCluster, index);
+    }
+    return wasAdded;
+  }
+
   public void delete()
   {
     VANET placeholderVANET = vANET;
@@ -186,6 +290,11 @@ public class Time
     {
       Node aNode = nodes.get(i - 1);
       aNode.delete();
+    }
+    for(int i=clusters.size(); i > 0; i--)
+    {
+      Cluster aCluster = clusters.get(i - 1);
+      aCluster.delete();
     }
   }
 
