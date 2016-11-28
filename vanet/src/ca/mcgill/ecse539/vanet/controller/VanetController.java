@@ -32,6 +32,7 @@ public class VanetController {
 	private double xRange = 1000;
 	private double yRange = 100;
 	private static final int DELAY = 1000;
+	private static final double VIEW_LENGTH = 1000;
 	private static VANET vnt = VANET.getInstance();
 	ArrayList<Integer> Chlist = new ArrayList<>();
 	private static List<Node> nodes=null;
@@ -75,10 +76,27 @@ public class VanetController {
     	
     	        	XYPlot plot = (XYPlot) chartnew.getPlot();
     	        	XYItemRenderer renderer  = plot.getRenderer(0);
-    	        	renderer.setSeriesShape(0, circle);
-    	        	renderer.setSeriesPaint(0,Color.BLUE);
-    	        	renderer.setSeriesShape(1, ShapeUtilities.createDiagonalCross(3, 1));
-    	        	renderer.setSeriesPaint(1,Color.RED);
+    	        	for(int i = 0 ; i < plot.getSeriesCount() - 1; i++){
+    	        		if(i%3 ==0){
+            	        	renderer.setSeriesShape(i, circle);
+            	        	renderer.setSeriesPaint(i,Color.BLUE);
+    	        		}
+    	        		else if(i%3 ==1){
+    	        			renderer.setSeriesShape(i, circle);
+            	        	renderer.setSeriesPaint(i,Color.RED);
+    	        		}
+    	        		else{
+    	        			renderer.setSeriesShape(i, circle);
+            	        	renderer.setSeriesPaint(i,Color.GREEN);
+    	        		}
+
+    	        	}
+//    	        	renderer.setSeriesShape(0, circle);
+//    	        	renderer.setSeriesPaint(0,Color.BLUE);
+    	        	renderer.setSeriesShape(plot.getSeriesCount() - 2, circle);
+    	        	renderer.setSeriesPaint(plot.getSeriesCount() - 2,Color.MAGENTA);
+    	        	renderer.setSeriesShape(plot.getSeriesCount() - 1, ShapeUtilities.createDiagonalCross(3, 1));
+    	        	renderer.setSeriesPaint(plot.getSeriesCount() - 1,Color.BLACK);
     	        	plot.setBackgroundPaint(Color.white);
     	            plot.setRangeGridlinePaint(Color.black);
     	            if(xRange != -1 && yRange != -1){
@@ -106,28 +124,53 @@ public class VanetController {
 	
 	private static XYDataset createDataset(Time t) {
 	    XYSeriesCollection result = new XYSeriesCollection();
-	    XYSeries series1 = new XYSeries("Node");
-	    XYSeries series2 = new XYSeries("ClusterHead");
+	    int numClusters = (int)(VIEW_LENGTH/300);
+	    List<XYSeries> xyList1 = new ArrayList<XYSeries>();
+	    List<XYSeries> xyList2 = new ArrayList<XYSeries>();
+	    for(int i =0 ;  i < numClusters; i++){
+	    	xyList1.add(new XYSeries("Cluster " + i));
+	    }
+	    XYSeries clusterHeads = new XYSeries("ClusterHead");
+	    XYSeries leftovers = new XYSeries("Cluster" + numClusters);
 		List<Node> cluster_head = CalculateVariables(t);
 
 	    for (Node n : nodes) {
 
 	    	if(!cluster_head.contains(n))
 	    	{
-		        double x = n.getPositionX();
-		        double y = n.getPositionY();
-		        series1.add(x, y);
+	    		for(int i =0; i < numClusters; i++){
+	    			if(n.getPositionX() < 300){
+				        double x = n.getPositionX();
+				        double y = n.getPositionY();
+				        xyList1.get(i).add(x, y);
+		    		}
+	    			else if(n.getPositionX() >= i*300 && n.getPositionX() < (i+1)*300){
+				        double x = n.getPositionX();
+				        double y = n.getPositionY();
+				        xyList1.get(i).add(x, y);
+		    		}
+
+	    		}
+    			if(n.getPositionX() >= numClusters*300){
+			        double x = n.getPositionX();
+			        double y = n.getPositionY();
+			        leftovers.add(x, y);
+	    		}
+         
 	    	}
 	    	else{
 	    		
 	    		double x = n.getPositionX();
 		        double y = n.getPositionY();
-		        series2.add(x, y);
+		        clusterHeads.add(x, y);
 	    	}
 
 	    }
-	    result.addSeries(series1);
-	    result.addSeries(series2);
+        for(XYSeries xy : xyList1){
+    	    result.addSeries(xy);
+        }
+        result.addSeries(leftovers);
+	    result.addSeries(clusterHeads);
 	    return result;
 	}
 
