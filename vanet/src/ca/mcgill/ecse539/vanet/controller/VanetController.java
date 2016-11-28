@@ -38,11 +38,14 @@ public class VanetController {
 	private static List<Node> nodes=null;
 	private static List<Cluster> clusters=null;
 	private static List<Node> clusterHeads=null;
-	private static List<Node> normalNodes=null;
+    private static int clusterCount = 1;
 	private JFreeChart chart = null;
 	private Shape circle = new Ellipse2D.Double(-2.0, -2.0, 6.0, 6.0);
 	private Shape square = new Rectangle2D.Double(-2.0, -2.0, 6.0, 6.0);
 	
+	
+	
+
 	public void setXRange(double x){
 		xRange = x;
 	}
@@ -55,7 +58,6 @@ public class VanetController {
 		// Initialization of the timer. 1 second delay and this class as ActionListener
 		ChartFrame frame = new ChartFrame("Car Positions", chart);
 		Iterator t = vnt.getTimes().iterator();
-
         ActionListener taskPerformer = new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
             	try{
@@ -63,11 +65,12 @@ public class VanetController {
             		Time temp = (Time) t.next();
                 	int currentFrame = (temp.getTimeframe());
             		nodes= getnodesbyFrameNumber(currentFrame);  
+            		XYDataset data= createDataset(temp);
     	        	JFreeChart chartnew = ChartFactory.createScatterPlot(
     	                "Car Positions at Time " + currentFrame, // chart title
     	                "X", // x axis label
     	                "Y", // y axis label
-    	                createDataset(temp), // data  ***-----PROBLEM------***
+    	                data, // data  ***-----PROBLEM------***
     	                PlotOrientation.VERTICAL,
     	                true, // include legend
     	                true, // tooltips
@@ -109,6 +112,8 @@ public class VanetController {
     	            panel.setChart(chartnew);
     	            frame.pack();
     	            frame.setVisible(true);
+    	            System.out.println("Clusterhead : " + nodes.get(0).getCuster().getCH().getId()+ " Cluster: " + nodes.get(0).getCuster().getVoting_ID()+ " " + nodes.get(0).getTime().getTimeframe());
+    	    	    //System.out.println(CreateTransmission(1,15,temp.getTimeframe()));
             	}
             	catch(Exception e){
             		
@@ -123,6 +128,8 @@ public class VanetController {
     }
 	
 	private static XYDataset createDataset(Time t) {
+//        vnt.getClusters().clear();
+//        System.out.println(vnt.getClusters());
 	    XYSeriesCollection result = new XYSeriesCollection();
 	    int numClusters = (int)(VIEW_LENGTH/300);
 	    List<XYSeries> xyList1 = new ArrayList<XYSeries>();
@@ -132,12 +139,13 @@ public class VanetController {
 	    }
 	    XYSeries clusterHeads = new XYSeries("ClusterHead");
 	    XYSeries leftovers = new XYSeries("Cluster" + numClusters);
-		List<Node> cluster_head = CalculateVariables(t);
 
-	    for (Node n : nodes) {
+	    List<Node> ch = CalculateVariables(t);
 
-	    	if(!cluster_head.contains(n))
+	    for(Node n : nodes){
+	    	if(!ch.contains(n))
 	    	{
+
 	    		for(int i =0; i < numClusters; i++){
 	    			if(n.getPositionX() < 300){
 				        double x = n.getPositionX();
@@ -163,14 +171,45 @@ public class VanetController {
 	    		double x = n.getPositionX();
 		        double y = n.getPositionY();
 		        clusterHeads.add(x, y);
-	    	}
 
+	    	}
 	    }
+
+	    XYSeries series2 = new XYSeries("ClusterHead");
+	    ArrayList<XYSeries> xyList = new ArrayList<XYSeries>();
+	    int i = 0;
+	    for(Cluster cluster : vnt.getClusters()){
+	    	int timeFrame = cluster.getCH().getTime().getTimeframe(); 
+	        XYSeries xy = new XYSeries("Normal Nodes " + i);
+            
+	    	if(timeFrame == t.getTimeframe()){
+                i++;
+	    		for(Node n :cluster.getClustermembers()){
+	    			if(!n.hasIs_CH()){
+	    				double x = n.getPositionX();
+				        double y = n.getPositionY();
+				        xy.add(x, y);
+				        
+	    			}
+	    	    	else{
+			    		double x = n.getPositionX();
+				        double y = n.getPositionY();
+				        series2.add(x, y);
+	    		    }
+	    		}
+	    	   
+                xyList.add(xy);
+	    		//result.addSeries(xy);
+	    		//result.addSeries(series2);
+	    	}
+	    }
+
         for(XYSeries xy : xyList1){
     	    result.addSeries(xy);
         }
         result.addSeries(leftovers);
 	    result.addSeries(clusterHeads);
+
 	    return result;
 	}
 
@@ -183,7 +222,7 @@ public class VanetController {
 		
 	}
 
-	public String CreateTransimission(int Source, int Destination, int TimeFrame) {
+	public static int CreateTransmission(int Source, int Destination, int TimeFrame) {
 		Time TF = null;
 		Node src = null;
 		Node dst = null;
@@ -206,24 +245,36 @@ public class VanetController {
 		src_ch = src.getCuster().getCH();
 		dst_ch = dst.getCuster().getCH();
 		while (!exit) {
-			for (Node nighbour : src_ch.getNeighbors()) {
-				if (nighbour == dst_ch) {
+			for (Node nighbour : src_ch.getNeighbors()) 
+			{
+				if (!nighbour.getCuster().getCH().equals(src_ch))
+				{
+					if(nighbour.getCuster().getCH().equals(dst_ch))
+					{
 					exit = true;
+					hopcount++;
 					break;
-				} else if (nighbour.hasIs_CH() == true) {
-					src_ch = nighbour;
+					}
+				 
+				else
+				{
+					src_ch = nighbour.getCuster().getCH();
+					hopcount++;
+					break;
 				}
+					
+				} // outer if end
 
-			}
-			hopcount++;
-		}
-		try {
-			Transmission TR = new Transmission(hopcount, vnt, src, dst);
-		} catch (Exception e) {
-			return e.toString();
-		}
+			}// for end
+			
+		}// while end
+//		try {
+//			Transmission TR = new Transmission(hopcount, vnt, src, dst);
+//		} catch (Exception e) {
+//			System.out.println(e.toString());
+//		}
 
-		return "";
+		return hopcount;
 
 	}
 
@@ -235,7 +286,7 @@ public class VanetController {
 		double difference;
 		double speeda;
 		double speedb;
-		double distancea;
+		double distancea = 0;
 		double distanceb;
 		int directiona;
 		int directionb;
@@ -244,13 +295,12 @@ public class VanetController {
 		double max=0;
 		List <Node>list_neighbors= new ArrayList<Node>();
 		List <Node>cluster_head= new ArrayList<Node>();
-		HashMap <Integer,Double> node_neighbor = new HashMap <Integer,Double> ();
 		Node current_head;
 		Node current_neighbors;
 		Node temp_head = null;
 		double current_qos;  
 		int time = t.getTimeframe();
-			int nodesize = nodes.size();
+		int nodesize = nodes.size();
 			// outer loop			
 			for (int i = 0; i <nodesize; i++) {
 				//get the required data from the class
@@ -275,54 +325,23 @@ public class VanetController {
 					}
 					
 				} // end inner loop
-				//System.out.println(nodes.get(i).getNeighbors().size());
 			} // end outer loop
-			time = time + 1;
 			//testing data:
 		
-			
-
-		
-//			for (int i=0;i<nodesize;i++){
-//				
-//				for (int d = 0; d < nodesize; d++){
-//					 
-//					if (node_neighbor.containsKey(d))
-//					{
-//						//System.out.println("True");
-//						//System.out.println(nodes.get(i).get_node_distance(d));
-//						
-//						nodes.get(i).addNeighbor(nodes.get(d));
-//					}
-//			
-//			   }
-//				
-//			}
-
-		/*	for (int k = 0; k < nodesize; k++) 
-			{
-				//System.out.println("===========");
-				{
-					//System.out.println(nodes.get(k).getNeighbors() + "  ");
-				}
-			}
-			*/
 			// Calculate QoS value for each node and send it to the class Node
 			for (int i = 0; i <nodesize; i++) {
 				speeda = nodes.get(i).getSpeed();
-				distancea = speeda * time;
+                distancea = speeda*time;
 				neighbor_size=nodes.get(i).getNeighbors().size();
 				if (speeda!=0){
-				qos=((1/speeda)*distancea *neighbor_size);
+					qos=((1/speeda)*distancea*neighbor_size);
 				}
 				else{
 					qos=0.0;
 				}
 				nodes.get(i).setQos((int)qos);
-				//System.out.println(nodes.get(i).getQos());
 
-
-		}
+		    }
 			
 			// Vote for the node with highest QoS among neighbors to be the CH 
 			List<Node> list_head=new ArrayList<Node>();
@@ -342,8 +361,6 @@ public class VanetController {
 					}
 				}
 				list_head.add(temp_head);
-
-
 			}
 
 			//List<Integer> list_head=new ArrayList();
@@ -362,21 +379,7 @@ public class VanetController {
 				}
 			}
 
-			//System.out.println(cluster_head.size());
-//	    	int i = 1;
-//			for(Node n : cluster_head){
-//				if(cluster_head.contains(n)){
-//					Cluster cluster = new Cluster(i,vnt,n);
-//					vnt.addCluster(cluster);
-//					n.setIs_CH(cluster);
-//					
-//				}
-//				System.out.println(n);
-//				i++;
-//			}
 			return cluster_head;
-
-
 
 			//System.out.println( "time " + time +"  list_head " + list_head);
 
