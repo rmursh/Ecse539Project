@@ -108,6 +108,8 @@ public class VanetController {
     	        	}
 //    	        	renderer.setSeriesShape(0, circle);
 //    	        	renderer.setSeriesPaint(0,Color.BLUE);
+    	        	renderer.setSeriesShape(plot.getSeriesCount() - 3, circle);
+    	        	renderer.setSeriesPaint(plot.getSeriesCount() - 3,Color.BLACK);
     	        	renderer.setSeriesShape(plot.getSeriesCount() - 2, circle);
     	        	renderer.setSeriesPaint(plot.getSeriesCount() - 2,Color.MAGENTA);
     	        	renderer.setSeriesShape(plot.getSeriesCount() - 1, ShapeUtilities.createDiagonalCross(3, 1));
@@ -144,6 +146,7 @@ public class VanetController {
 //        System.out.println(vnt.getClusters());
 	    XYSeriesCollection result = new XYSeriesCollection();
 	    int numClusters = (int)(2*(VIEW_LENGTH/300));
+	    int numClusters2 = numClusters -1;
 	    List<XYSeries> xyList1 = new ArrayList<XYSeries>();
 	    List<XYSeries> xyList2 = new ArrayList<XYSeries>();
 	    for(int i =0 ;  i < numClusters; i++){
@@ -151,7 +154,7 @@ public class VanetController {
 	    }
 	    XYSeries clusterHeads = new XYSeries("ClusterHead");
 	    XYSeries leftovers = new XYSeries("Cluster" + numClusters);
-
+	    XYSeries leftovers2 = new XYSeries("Cluster" + numClusters2);
 	    List<Node> ch = CalculateVariables(t);
 
 	    for(Node n : nodes){
@@ -181,11 +184,16 @@ public class VanetController {
 	    			}
 
 	    		}
-    			if(n.getPositionX() >= numClusters*300){
+    			if(n.getPositionX() >= (numClusters/2)*300 && (n.getDirection() > 0.5)){
 			        double x = n.getPositionX();
 			        double y = n.getPositionY();
 			        leftovers.add(x, y);
 	    		}
+    			else if(n.getPositionX() >= (numClusters/2)*300 && (n.getDirection() < 0.5)){
+			        double x = n.getPositionX();
+			        double y = n.getPositionY();
+			        leftovers2.add(x, y);
+    			}
          
 	    	}
 	    	else{
@@ -203,6 +211,7 @@ public class VanetController {
     	    result.addSeries(xy);
         }
         result.addSeries(leftovers);
+        result.addSeries(leftovers2);
 	    result.addSeries(clusterHeads);
 
 	    return result;
