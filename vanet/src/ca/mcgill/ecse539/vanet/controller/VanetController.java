@@ -197,34 +197,7 @@ public class VanetController {
 	    	}
 	    }
 
-	    XYSeries series2 = new XYSeries("ClusterHead");
-	    ArrayList<XYSeries> xyList = new ArrayList<XYSeries>();
-	    int i = 0;
-	    for(Cluster cluster : vnt.getClusters()){
-	    	int timeFrame = cluster.getCH().getTime().getTimeframe(); 
-	        XYSeries xy = new XYSeries("Normal Nodes " + i);
-            
-	    	if(timeFrame == t.getTimeframe()){
-                i++;
-	    		for(Node n :cluster.getClustermembers()){
-	    			if(!n.hasIs_CH()){
-	    				double x = n.getPositionX();
-				        double y = n.getPositionY();
-				        xy.add(x, y);
-				        
-	    			}
-	    	    	else{
-			    		double x = n.getPositionX();
-				        double y = n.getPositionY();
-				        series2.add(x, y);
-	    		    }
-	    		}
-	    	   
-                xyList.add(xy);
-	    		//result.addSeries(xy);
-	    		//result.addSeries(series2);
-	    	}
-	    }
+
 
         for(XYSeries xy : xyList1){
     	    result.addSeries(xy);
