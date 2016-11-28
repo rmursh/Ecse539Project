@@ -80,17 +80,29 @@ public class VanetController {
     	        	XYPlot plot = (XYPlot) chartnew.getPlot();
     	        	XYItemRenderer renderer  = plot.getRenderer(0);
     	        	for(int i = 0 ; i < plot.getSeriesCount() - 1; i++){
-    	        		if(i%3 ==0){
+    	        		if(i%6 ==0){
             	        	renderer.setSeriesShape(i, circle);
             	        	renderer.setSeriesPaint(i,Color.BLUE);
     	        		}
-    	        		else if(i%3 ==1){
+    	        		else if(i%6 ==1){
     	        			renderer.setSeriesShape(i, circle);
-            	        	renderer.setSeriesPaint(i,Color.RED);
+            	        	renderer.setSeriesPaint(i,Color.GREEN);
+    	        		}
+    	        		else if(i%6 ==2){
+      	        			renderer.setSeriesShape(i, circle);
+            	        	renderer.setSeriesPaint(i,Color.YELLOW);
+    	        		}
+    	        		else if(i%6 ==3){
+      	        			renderer.setSeriesShape(i, circle);
+            	        	renderer.setSeriesPaint(i,Color.CYAN);
+    	        		}
+    	        		else if(i%6 ==4){
+      	        			renderer.setSeriesShape(i, circle);
+            	        	renderer.setSeriesPaint(i,Color.GRAY);
     	        		}
     	        		else{
     	        			renderer.setSeriesShape(i, circle);
-            	        	renderer.setSeriesPaint(i,Color.GREEN);
+            	        	renderer.setSeriesPaint(i,Color.ORANGE);
     	        		}
 
     	        	}
@@ -99,7 +111,7 @@ public class VanetController {
     	        	renderer.setSeriesShape(plot.getSeriesCount() - 2, circle);
     	        	renderer.setSeriesPaint(plot.getSeriesCount() - 2,Color.MAGENTA);
     	        	renderer.setSeriesShape(plot.getSeriesCount() - 1, ShapeUtilities.createDiagonalCross(3, 1));
-    	        	renderer.setSeriesPaint(plot.getSeriesCount() - 1,Color.BLACK);
+    	        	renderer.setSeriesPaint(plot.getSeriesCount() - 1,Color.RED);
     	        	plot.setBackgroundPaint(Color.white);
     	            plot.setRangeGridlinePaint(Color.black);
     	            if(xRange != -1 && yRange != -1){
@@ -131,7 +143,7 @@ public class VanetController {
 //        vnt.getClusters().clear();
 //        System.out.println(vnt.getClusters());
 	    XYSeriesCollection result = new XYSeriesCollection();
-	    int numClusters = (int)(VIEW_LENGTH/300);
+	    int numClusters = (int)(2*(VIEW_LENGTH/300));
 	    List<XYSeries> xyList1 = new ArrayList<XYSeries>();
 	    List<XYSeries> xyList2 = new ArrayList<XYSeries>();
 	    for(int i =0 ;  i < numClusters; i++){
@@ -146,17 +158,27 @@ public class VanetController {
 	    	if(!ch.contains(n))
 	    	{
 
-	    		for(int i =0; i < numClusters; i++){
-	    			if(n.getPositionX() < 300){
+	    		for(int i =0; i < (numClusters/2); i++){
+	    			if(n.getPositionX() < 300 && n.getDirection() > 0.5){
 				        double x = n.getPositionX();
 				        double y = n.getPositionY();
 				        xyList1.get(i).add(x, y);
 		    		}
-	    			else if(n.getPositionX() >= i*300 && n.getPositionX() < (i+1)*300){
+	    			else if(n.getPositionX() >= i*300 && n.getPositionX() < (i+1)*300 && (n.getDirection() > 0.5)){
 				        double x = n.getPositionX();
 				        double y = n.getPositionY();
 				        xyList1.get(i).add(x, y);
 		    		}
+	    			else if(n.getPositionX() >= i*300 && n.getPositionX() < (i+1)*300 && (n.getDirection() < 0.5)){
+				        double x = n.getPositionX();
+				        double y = n.getPositionY();
+				        xyList1.get(i+(numClusters/2)).add(x, y);
+	    			}
+	    			else if(n.getPositionX() < 300 && n.getDirection() < 0.5){
+				        double x = n.getPositionX();
+				        double y = n.getPositionY();
+				        xyList1.get(i+(numClusters/2)).add(x, y);
+	    			}
 
 	    		}
     			if(n.getPositionX() >= numClusters*300){
