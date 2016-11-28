@@ -126,8 +126,6 @@ public class VanetController {
     	            panel.setChart(chartnew);
     	            frame.pack();
     	            frame.setVisible(true);
-    	            System.out.println("Clusterhead : " + nodes.get(0).getCuster().getCH().getId()+ " Cluster: " + nodes.get(0).getCuster().getVoting_ID()+ " " + nodes.get(0).getTime().getTimeframe());
-    	    	    //System.out.println(CreateTransmission(1,15,temp.getTimeframe()));
             	}
             	catch(Exception e){
             		
@@ -149,8 +147,9 @@ public class VanetController {
 	    int numClusters2 = numClusters -1;
 	    List<XYSeries> xyList1 = new ArrayList<XYSeries>();
 	    List<XYSeries> xyList2 = new ArrayList<XYSeries>();
-	    for(int i =0 ;  i < numClusters; i++){
+	    for(int i =0 ;  i < numClusters+2; i++){
 	    	xyList1.add(new XYSeries("Cluster " + i));
+			Cluster cluster = new Cluster(i, vnt);
 	    }
 	    XYSeries clusterHeads = new XYSeries("ClusterHead");
 	    XYSeries leftovers = new XYSeries("Cluster" + numClusters);
@@ -163,33 +162,39 @@ public class VanetController {
 
 	    		for(int i =0; i < (numClusters/2); i++){
 	    			if(n.getPositionX() < 300 && n.getDirection() > 0.5){
+	    				vnt.getCluster(i).addClustermember(n);
 				        double x = n.getPositionX();
 				        double y = n.getPositionY();
 				        xyList1.get(i).add(x, y);
 		    		}
 	    			else if(n.getPositionX() >= i*300 && n.getPositionX() < (i+1)*300 && (n.getDirection() > 0.5)){
+	    				vnt.getCluster(i).addClustermember(n);
 				        double x = n.getPositionX();
 				        double y = n.getPositionY();
 				        xyList1.get(i).add(x, y);
 		    		}
 	    			else if(n.getPositionX() >= i*300 && n.getPositionX() < (i+1)*300 && (n.getDirection() < 0.5)){
+	    				vnt.getCluster(i+(numClusters/2)).addClustermember(n);
 				        double x = n.getPositionX();
 				        double y = n.getPositionY();
 				        xyList1.get(i+(numClusters/2)).add(x, y);
 	    			}
 	    			else if(n.getPositionX() < 300 && n.getDirection() < 0.5){
-				        double x = n.getPositionX();
+	    				vnt.getCluster(i+(numClusters/2)).addClustermember(n);
+	    				double x = n.getPositionX();
 				        double y = n.getPositionY();
 				        xyList1.get(i+(numClusters/2)).add(x, y);
 	    			}
 
 	    		}
     			if(n.getPositionX() >= (numClusters/2)*300 && (n.getDirection() > 0.5)){
+    				vnt.getCluster(numClusters+2).addClustermember(n);
 			        double x = n.getPositionX();
 			        double y = n.getPositionY();
 			        leftovers.add(x, y);
 	    		}
     			else if(n.getPositionX() >= (numClusters/2)*300 && (n.getDirection() < 0.5)){
+    				vnt.getCluster(numClusters+2).addClustermember(n);
 			        double x = n.getPositionX();
 			        double y = n.getPositionY();
 			        leftovers2.add(x, y);
@@ -213,7 +218,6 @@ public class VanetController {
         result.addSeries(leftovers);
         result.addSeries(leftovers2);
 	    result.addSeries(clusterHeads);
-
 	    return result;
 	}
 
@@ -226,61 +230,61 @@ public class VanetController {
 		
 	}
 
-	public static int CreateTransmission(int Source, int Destination, int TimeFrame) {
-		Time TF = null;
-		Node src = null;
-		Node dst = null;
-		Node src_ch = null;
-		Node dst_ch = null;
-		int hopcount = 2;
-		boolean exit = false;
-		for (Time t : vnt.getTimes()) {
-			if (t.getTimeframe() == TimeFrame) {
-				TF = t;
-				break;
-			}
-		}
-		for (Node n : TF.getNodes()) {
-			if (n.getId() == Source)
-				src = n;
-			if (n.getId() == Destination)
-				dst = n;
-		}
-		src_ch = src.getCuster().getCH();
-		dst_ch = dst.getCuster().getCH();
-		while (!exit) {
-			for (Node nighbour : src_ch.getNeighbors()) 
-			{
-				if (!nighbour.getCuster().getCH().equals(src_ch))
-				{
-					if(nighbour.getCuster().getCH().equals(dst_ch))
-					{
-					exit = true;
-					hopcount++;
-					break;
-					}
-				 
-				else
-				{
-					src_ch = nighbour.getCuster().getCH();
-					hopcount++;
-					break;
-				}
-					
-				} // outer if end
-
-			}// for end
-			
-		}// while end
-//		try {
-//			Transmission TR = new Transmission(hopcount, vnt, src, dst);
-//		} catch (Exception e) {
-//			System.out.println(e.toString());
+//	public static int CreateTransmission(int Source, int Destination, int TimeFrame) {
+//		Time TF = null;
+//		Node src = null;
+//		Node dst = null;
+//		Node src_ch = null;
+//		Node dst_ch = null;
+//		int hopcount = 2;
+//		boolean exit = false;
+//		for (Time t : vnt.getTimes()) {
+//			if (t.getTimeframe() == TimeFrame) {
+//				TF = t;
+//				break;
+//			}
 //		}
-
-		return hopcount;
-
-	}
+//		for (Node n : TF.getNodes()) {
+//			if (n.getId() == Source)
+//				src = n;
+//			if (n.getId() == Destination)
+//				dst = n;
+//		}
+//		src_ch = src.getCuster().getCH();
+//		dst_ch = dst.getCuster().getCH();
+//		while (!exit) {
+//			for (Node nighbour : src_ch.getNeighbors()) 
+//			{
+//				if (!nighbour.getCuster().getCH().equals(src_ch))
+//				{
+//					if(nighbour.getCuster().getCH().equals(dst_ch))
+//					{
+//					exit = true;
+//					hopcount++;
+//					break;
+//					}
+//				 
+//				else
+//				{
+//					src_ch = nighbour.getCuster().getCH();
+//					hopcount++;
+//					break;
+//				}
+//					
+//				} // outer if end
+//
+//			}// for end
+//			
+//		}// while end
+////		try {
+////			Transmission TR = new Transmission(hopcount, vnt, src, dst);
+////		} catch (Exception e) {
+////			System.out.println(e.toString());
+////		}
+//
+//		return hopcount;
+//
+//	}
 
 	public static List<Node> CalculateVariables(Time t) {
 		// Node n= new Node(0, 0, 0, 0, 0, vnt);// this how you will create

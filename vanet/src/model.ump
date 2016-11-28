@@ -34,7 +34,8 @@ class Cluster
 {
 Integer voting_ID;
 * -<@> 1 VANET;
- 0..1 is_CH -- 1 Node CH;  
+
+/* 0..1 is_CH -- 1 Node CH;  */
 }
 
 class Transmission

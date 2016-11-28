@@ -1,5 +1,5 @@
 /*PLEASE DO NOT EDIT THIS CODE*/
-/*This code was generated using the UMPLE 1.22.0.5146 modeling language!*/
+/*This code was generated using the UMPLE 1.24.0-dab6b48 modeling language!*/
 
 package ca.mcgill.ecse539.vanet.model;
 import java.util.*;
@@ -365,9 +365,9 @@ public class VANET
     return 0;
   }
 
-  public Cluster addCluster(int aVoting_ID, Node aCH)
+  public Cluster addCluster(int aVoting_ID)
   {
-    return new Cluster(aVoting_ID, this, aCH);
+    return new Cluster(aVoting_ID, this);
   }
 
   public boolean addCluster(Cluster aCluster)
@@ -513,7 +513,6 @@ public class VANET
       times.remove(aTime);
     }
     
-      
     while (nodes.size() > 0)
     {
       Node aNode = nodes.get(nodes.size() - 1);
@@ -521,7 +520,6 @@ public class VANET
       nodes.remove(aNode);
     }
     
-      
     while (clusters.size() > 0)
     {
       Cluster aCluster = clusters.get(clusters.size() - 1);
@@ -529,7 +527,6 @@ public class VANET
       clusters.remove(aCluster);
     }
     
-      
     while (transmissions.size() > 0)
     {
       Transmission aTransmission = transmissions.get(transmissions.size() - 1);
@@ -537,13 +534,12 @@ public class VANET
       transmissions.remove(aTransmission);
     }
     
-      
   }
 
 
   public String toString()
   {
-	  String outputString = "";
+    String outputString = "";
     return super.toString() + "["+
             "area" + ":" + getArea()+ "," +
             "range" + ":" + getRange()+ "," +

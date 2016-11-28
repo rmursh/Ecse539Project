@@ -1,5 +1,5 @@
 /*PLEASE DO NOT EDIT THIS CODE*/
-/*This code was generated using the UMPLE 1.22.0.5146 modeling language!*/
+/*This code was generated using the UMPLE 1.24.0-dab6b48 modeling language!*/
 
 package ca.mcgill.ecse539.vanet.model;
 import java.util.*;
@@ -17,25 +17,19 @@ public class Cluster
 
   //Cluster Associations
   private VANET vANET;
-  private Node CH;
   private List<Node> clustermembers;
 
   //------------------------
   // CONSTRUCTOR
   //------------------------
 
-  public Cluster(int aVoting_ID, VANET aVANET, Node aCH)
+  public Cluster(int aVoting_ID, VANET aVANET)
   {
     voting_ID = aVoting_ID;
     boolean didAddVANET = setVANET(aVANET);
     if (!didAddVANET)
     {
       throw new RuntimeException("Unable to create cluster due to vANET");
-    }
-    boolean didAddCH = setCH(aCH);
-    if (!didAddCH)
-    {
-      throw new RuntimeException("Unable to create is_CH due to CH");
     }
     clustermembers = new ArrayList<Node>();
   }
@@ -60,11 +54,6 @@ public class Cluster
   public VANET getVANET()
   {
     return vANET;
-  }
-
-  public Node getCH()
-  {
-    return CH;
   }
 
   public Node getClustermember(int index)
@@ -112,34 +101,6 @@ public class Cluster
       existingVANET.removeCluster(this);
     }
     vANET.addCluster(this);
-    wasSet = true;
-    return wasSet;
-  }
-
-  public boolean setCH(Node aNewCH)
-  {
-    boolean wasSet = false;
-    if (aNewCH == null)
-    {
-      //Unable to setCH to null, as is_CH must always be associated to a CH
-      return wasSet;
-    }
-    
-    Cluster existingIs_CH = aNewCH.getIs_CH();
-    if (existingIs_CH != null && !equals(existingIs_CH))
-    {
-      //Unable to setCH, the current CH already has a is_CH, which would be orphaned if it were re-assigned
-      return wasSet;
-    }
-    
-    Node anOldCH = CH;
-    CH = aNewCH;
-    CH.setIs_CH(this);
-
-    if (anOldCH != null)
-    {
-      anOldCH.setIs_CH(null);
-    }
     wasSet = true;
     return wasSet;
   }
@@ -220,12 +181,6 @@ public class Cluster
     VANET placeholderVANET = vANET;
     this.vANET = null;
     placeholderVANET.removeCluster(this);
-    Node existingCH = CH;
-    CH = null;
-    if (existingCH != null)
-    {
-      existingCH.setIs_CH(null);
-    }
     while( !clustermembers.isEmpty() )
     {
       clustermembers.get(0).setCuster(null);
@@ -235,11 +190,10 @@ public class Cluster
 
   public String toString()
   {
-	  String outputString = "";
+    String outputString = "";
     return super.toString() + "["+
             "voting_ID" + ":" + getVoting_ID()+ "]" + System.getProperties().getProperty("line.separator") +
-            "  " + "vANET = "+(getVANET()!=null?Integer.toHexString(System.identityHashCode(getVANET())):"null") + System.getProperties().getProperty("line.separator") +
-            "  " + "CH = "+(getCH()!=null?Integer.toHexString(System.identityHashCode(getCH())):"null")
+            "  " + "vANET = "+(getVANET()!=null?Integer.toHexString(System.identityHashCode(getVANET())):"null")
      + outputString;
   }
 }

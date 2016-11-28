@@ -1,5 +1,5 @@
 /*PLEASE DO NOT EDIT THIS CODE*/
-/*This code was generated using the UMPLE 1.22.0.5146 modeling language!*/
+/*This code was generated using the UMPLE 1.24.0-dab6b48 modeling language!*/
 
 package ca.mcgill.ecse539.vanet.model;
 import java.util.*;
@@ -27,7 +27,6 @@ public class Node
   private Cluster custer;
   private Time time;
   private Node node;
-  private Cluster is_CH;
   private List<Transmission> ts;
   private List<Transmission> td;
 
@@ -213,17 +212,6 @@ public class Node
   public boolean hasNode()
   {
     boolean has = node != null;
-    return has;
-  }
-
-  public Cluster getIs_CH()
-  {
-    return is_CH;
-  }
-
-  public boolean hasIs_CH()
-  {
-    boolean has = is_CH != null;
     return has;
   }
 
@@ -430,33 +418,6 @@ public class Node
     return wasSet;
   }
 
-  public boolean setIs_CH(Cluster aNewIs_CH)
-  {
-    boolean wasSet = false;
-    if (is_CH != null && !is_CH.equals(aNewIs_CH) && equals(is_CH.getCH()))
-    {
-      //Unable to setIs_CH, as existing is_CH would become an orphan
-      return wasSet;
-    }
-
-    is_CH = aNewIs_CH;
-    Node anOldCH = aNewIs_CH != null ? aNewIs_CH.getCH() : null;
-
-    if (!this.equals(anOldCH))
-    {
-      if (anOldCH != null)
-      {
-        anOldCH.is_CH = null;
-      }
-      if (is_CH != null)
-      {
-        is_CH.setCH(this);
-      }
-    }
-    wasSet = true;
-    return wasSet;
-  }
-
   public static int minimumNumberOfTs()
   {
     return 0;
@@ -625,12 +586,6 @@ public class Node
       this.node = null;
       placeholderNode.removeNeighbor(this);
     }
-    Cluster existingIs_CH = is_CH;
-    is_CH = null;
-    if (existingIs_CH != null)
-    {
-      existingIs_CH.delete();
-    }
     for(int i=ts.size(); i > 0; i--)
     {
       Transmission aT = ts.get(i - 1);
@@ -646,7 +601,7 @@ public class Node
 
   public String toString()
   {
-	  String outputString = "";
+    String outputString = "";
     return super.toString() + "["+
             "id" + ":" + getId()+ "," +
             "positionX" + ":" + getPositionX()+ "," +
@@ -657,8 +612,7 @@ public class Node
             "remaining_d" + ":" + getRemaining_d()+ "]" + System.getProperties().getProperty("line.separator") +
             "  " + "vANET = "+(getVANET()!=null?Integer.toHexString(System.identityHashCode(getVANET())):"null") + System.getProperties().getProperty("line.separator") +
             "  " + "custer = "+(getCuster()!=null?Integer.toHexString(System.identityHashCode(getCuster())):"null") + System.getProperties().getProperty("line.separator") +
-            "  " + "time = "+(getTime()!=null?Integer.toHexString(System.identityHashCode(getTime())):"null") + System.getProperties().getProperty("line.separator") +
-            "  " + "is_CH = "+(getIs_CH()!=null?Integer.toHexString(System.identityHashCode(getIs_CH())):"null")
+            "  " + "time = "+(getTime()!=null?Integer.toHexString(System.identityHashCode(getTime())):"null")
      + outputString;
   }
 }
