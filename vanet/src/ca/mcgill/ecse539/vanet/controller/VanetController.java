@@ -199,7 +199,6 @@ public class VanetController {
 			        double y = n.getPositionY();
 			        leftovers2.add(x, y);
     			}
-         
 	    	}
 	    	else{
 	    		
